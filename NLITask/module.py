@@ -198,8 +198,16 @@ class PositionwiseFeedForward(nn.Module):
 	def __init__(self, d_h, d_in_h, dropout=0.1):
 		super(PositionwiseFeedForward, self).__init__()
 
-		self.cov_1 = nn.Conv1d(d_h, d_in_h, 1)  # position-wise
-		self.cov_2 = nn.Conv1d(d_in_h, d_h, 1)  # position-wise
+		self.ffd = args.ffd
+		if args.ffd == "conv1d":
+
+			self.cov_1 = nn.Conv1d(d_h, d_in_h, 1)  # position-wise
+			self.cov_2 = nn.Conv1d(d_in_h, d_h, 1)  # position-wise
+
+		else:
+
+			self.l1 = nn.Linear(d_h, d_in_h)
+			self.l2 = nn.Linear(d_in_h, d_h)
 
 		self.layer_norm = nn.LayerNorm(d_h)
 		self.dropout = nn.Dropout(dropout)
@@ -207,11 +215,22 @@ class PositionwiseFeedForward(nn.Module):
 
 
 	def forward(self, x):
-		out = self.relu(self.cov_1(x.transpose(1, 2)))
 
-		out = self.cov_2(out).transpose(2, 1)
+		if self.ffd == "conv1d":
+			out = self.relu(self.cov_1(x.transpose(1, 2)))
 
-		out = self.dropout(out)
+			out = self.cov_2(out).transpose(2, 1)
+
+			out = self.dropout(out)
+
+		else:
+
+			out = self.relu(self.l1(x))
+
+			out = self.l2(out)
+
+			out = self.dropout(out)
+
 
 		return self.layer_norm(out + x)
 
@@ -225,7 +244,7 @@ class Half_Encoder(nn.Module):
 
 		self.fusion_gate = FusionGate(args.d_e, args.dropout)
 
-		self.feed_forward = PositionwiseFeedForward(args.d_e, args.d_ff, args.dropout)
+		self.feed_forward = PositionwiseFeedForward(args.d_e, args.d_ff, args.dropout, args)
 
 
 	def forward(self, x, rep_mask):
