@@ -1,6 +1,6 @@
 # Machine Translation
  
-Implementation for Machine Translation
+Implementation for NLITask
 
 ## Requirements
 - Python >= 3.5
