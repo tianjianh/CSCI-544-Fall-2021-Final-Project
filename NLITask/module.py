@@ -66,7 +66,7 @@ def distance_matrix(sen_len, device):
 
 class single_Attention(nn.Module):
 
-	def __init__(self, d_model, direction, alpha, device='cuda:0'):
+	def __init__(self, d_model, direction, alpha, device='cuda:0', args):
 		super(single_Attention, self).__init__()
 
 		self.direction = direction
@@ -89,12 +89,14 @@ class single_Attention(nn.Module):
 
 		rep_matrix = sentence_fixed_matrix(repsentation_mask)
 
-		dist_matrix = distance_matrix(seq_len, self.device)
 
-		mask = rep_matrix * direct_matrix
 
 		#There is where we added distance matrix in it.
-		multi_att += self.alpha * dist_matrix
+		if args.poe = True:
+
+			dist_matrix = distance_matrix(seq_len, self.device)
+			mask = rep_matrix * direct_matrix
+			multi_att += self.alpha * dist_matrix
 
 		multi_att = m_softmax(multi_att, mask, dim=2)
 
@@ -117,7 +119,7 @@ class MultiHeadAttention(nn.Module):
 		self.weight_ks = nn.Parameter(torch.FloatTensor(self.n_head, self.d_model, self.d_k))
 		self.weight_vs = nn.Parameter(torch.FloatTensor(self.n_head, self.d_model, self.d_v))
 
-		self.attention = single_Attention(self.d_model, direction, args.alpha, device=args.device)
+		self.attention = single_Attention(self.d_model, direction, args.alpha, device=args.device, args)
 		self.layer_norm = nn.LayerNorm(int(self.d_k))
 		self.layer_norm2 = nn.LayerNorm(self.d_model)
 

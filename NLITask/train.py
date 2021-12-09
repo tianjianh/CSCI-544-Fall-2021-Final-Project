@@ -93,6 +93,11 @@ def main():
 	parser.add_argument('--num-heads', default=5, type=int)
 	parser.add_argument('--d-ff', default=300 * 4, type=int)
 	parser.add_argument('--alpha', default=1.5, type=float)
+	parser.add_argument('--ffd', default="conv1d", type=str)
+	parser.add_argument('--poe', default=True, type=bool)
+	parser.add_argument('--alpha', default=1.5, type=float)
+
+
 
 	args = parser.parse_args()
 

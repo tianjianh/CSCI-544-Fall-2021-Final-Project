@@ -28,6 +28,9 @@ class NLItask(nn.Module):
 		self.d_ff = args.d_ff
 		self.device = args.device
 
+
+		# self.poe = args.poe
+
 		self.word_emb = nn.Embedding(args.word_vocab_size, args.word_dim)
 		# initialize word embedding with GloVe
 		self.word_emb.weight.data.copy_(data.TEXT.vocab.vectors)
